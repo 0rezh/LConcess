@@ -5,14 +5,6 @@ else
     TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 end
 
-local function GeneratePlate()
-    local plate = ""
-    for i = 1, 6 do
-        plate = plate .. string.char(math.random(65, 90))
-    end
-    return plate
-end
-
 ESX.RegisterServerCallback("LConncessAuto:GetVehicles", function(source, cb, category)
     MySQL.Async.fetchAll("SELECT * FROM `vehicles` WHERE `category` = ?", {
         category
@@ -21,14 +13,23 @@ ESX.RegisterServerCallback("LConncessAuto:GetVehicles", function(source, cb, cat
     end)
 end)
 
-RegisterServerEvent("LConncessAuto:BuyVehicle", function(vehicle, price)
+ESX.RegisterServerCallback('LConcess:CheckMoney', function(source, cb, price)
+    local xPlayer = ESX.GetPlayerFromId(source)
+    if xPlayer.getMoney() >= price then
+        cb(true)
+    else
+        cb(false)
+    end
+end)
+
+RegisterServerEvent("LConncessAuto:BuyVehicle", function(vehicle, price, plate, properties)
     local xPlayer = ESX.GetPlayerFromId(source)
     if xPlayer.getMoney() >= price then
         xPlayer.removeMoney(price)
         MySQL.Async.execute("INSERT INTO `owned_vehicles` (`owner`, `plate`, `vehicle`, `stored`) VALUES (?, ?, ?, ?)", {
             xPlayer.getIdentifier(),
-            GeneratePlate(),
-            vehicle,
+            plate,
+            json.encode(properties),
             1
         })
         ShowNotification("Vous avez acheté un véhicule, retrouvez-le dans votre garage", source)

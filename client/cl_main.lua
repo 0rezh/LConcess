@@ -58,6 +58,14 @@ Citizen.CreateThread(function()
     end
 end)
 
+local function GeneratePlate()
+    local plate = ""
+    for i = 1, 6 do
+        plate = plate .. string.char(math.random(65, 90))
+    end
+    return plate
+end
+
 function RageUI.PoolMenus:ConcessAuto()
     main:IsVisible(function(Items)
         Items:AddSeparator('↓ ' .. Config.MainColor .. 'Catégories~s~ ↓')
@@ -152,7 +160,19 @@ function RageUI.PoolMenus:ConcessAuto()
         end
         Items:AddButton("Acheter le véhicule", nil, {RightLabel = Config.RightLabel}, function(onSelected, Active)
             if onSelected then
-                TriggerServerEvent('LConncessAuto:BuyVehicle', vehicleInfo.model, vehicleInfo.price)
+                ESX.TriggerServerCallback('LConcess:CheckMoney', function(HasMoney)
+                    if HasMoney then
+                        local vehicle = CreateVehicle(vehicleInfo.model, 0, 0, 0, 0, true, false)
+                        Wait(100)
+                        local plate = GeneratePlate()
+                        SetVehicleNumberPlateText(vehicle, plate)
+                        local properties = ESX.Game.GetVehicleProperties(vehicle)
+                        Wait(300)
+                        TriggerServerEvent('LConncessAuto:BuyVehicle', vehicleInfo.model, vehicleInfo.price, plate, properties)
+                    else
+                        ShowNotification("Vous n'avez pas assez d'argent")
+                    end
+                end, vehicleInfo.price)         
                 if preview then
                     preview = false
                     TriggerServerEvent('LConncessAuto:ResetPlayerInRoutingBucket', GetPlayerServerId(PlayerId()))
