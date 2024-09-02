@@ -20,6 +20,10 @@ Config = {
     CamPos = vec4(-52.042942047119, -1094.7326660156, 28.422344207764, 248.5131072998),
     PreviewSpawnCar = vec4(-45.629634857178, -1097.1435546875, 26.422361373901, 65.257019042969),
 
+    TestDrive = true,
+    TestDriveTime = 30000, -- 30 secondes
+    TestDrivePos = vec4(-905.18316650391, -3292.7409667969, 13.944423675537, 58.192096710205),
+
     Class = {
         ["compacts"] = "Compacts",
         ["sedans"] = "Sedans",

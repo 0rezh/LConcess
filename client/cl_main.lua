@@ -10,6 +10,7 @@ local category = RageUI.CreateSubMenu(main, "Catégories", "")
 local vehicle = RageUI.CreateSubMenu(category, "Véhicules", "")
 local vehicleInfo = {}
 local preview = false
+local testDrive = false
 local ListVehicles = {}
 
 Citizen.CreateThread(function()
@@ -155,6 +156,36 @@ function RageUI.PoolMenus:ConcessAuto()
                     DeleteEntity(GetVehiclePedIsIn(PlayerPedId(), false))
                     DestroyCam(cam, false)
                     SetEntityCoords(PlayerPedId(), Config.DrawMarkerPos)
+                end
+            end)
+        end
+        if Config.TestDrive then
+            Items:AddButton('Tester le véhicule', nil, {RightLabel = Config.RightLabel}, function(onSelected)
+                if onSelected then
+                    TriggerServerEvent('LConncessAuto:AddPlayerInRoutingBucket', GetPlayerServerId(PlayerId()))
+                    testDrive = true
+                    local ModelHash = vehicleInfo.model
+                    if not IsModelInCdimage(ModelHash) then return end
+                    RequestModel(ModelHash)
+                    while not HasModelLoaded(ModelHash) do
+                      Wait(0)
+                    end
+                    local Vehicle = CreateVehicle(ModelHash, Config.TestDrivePos.x, Config.TestDrivePos.y, Config.TestDrivePos.z, Config.TestDrivePos.w, false, false)
+                    SetModelAsNoLongerNeeded(ModelHash)
+                    TaskWarpPedIntoVehicle(PlayerPedId(), Vehicle, -1)
+                    ShowNotification("Vous avez 30 secondes pour tester le véhicule")
+                    CreateThread(function()
+                        while testDrive do
+                            Wait(0)
+                            SetEntityHeading(veh, GetEntityHeading(veh) + 0.1)
+                            DisableControlAction(0, 75, true)
+                        end
+                    end)
+                    Wait(Config.TestDriveTime)
+                    DeleteEntity(Vehicle)
+                    SetEntityCoords(PlayerPedId(), Config.DrawMarkerPos)
+                    testDrive = false
+                    TriggerServerEvent('LConncessAuto:ResetPlayerInRoutingBucket', GetPlayerServerId(PlayerId()))
                 end
             end)
         end
