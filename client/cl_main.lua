@@ -162,6 +162,17 @@ function RageUI.PoolMenus:ConcessAuto()
         if Config.TestDrive then
             Items:AddButton('Tester le véhicule', nil, {RightLabel = Config.RightLabel}, function(onSelected)
                 if onSelected then
+                    if preview then
+                        preview = false
+                        TriggerServerEvent('LConncessAuto:ResetPlayerInRoutingBucket', GetPlayerServerId(PlayerId()))
+                        SetEntityVisible(PlayerPedId(), true)
+                        RenderScriptCams(false, true, 500)
+                        SetEntityAsNoLongerNeeded(veh)
+                        SetModelAsNoLongerNeeded(veh)
+                        DeleteEntity(GetVehiclePedIsIn(PlayerPedId(), false))
+                        DestroyCam(cam, false)
+                        -- SetEntityCoords(PlayerPedId(), Config.DrawMarkerPos)
+                    end
                     TriggerServerEvent('LConncessAuto:AddPlayerInRoutingBucket', GetPlayerServerId(PlayerId()))
                     testDrive = true
                     local ModelHash = vehicleInfo.model
