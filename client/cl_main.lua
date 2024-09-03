@@ -171,7 +171,6 @@ function RageUI.PoolMenus:ConcessAuto()
                         SetModelAsNoLongerNeeded(veh)
                         DeleteEntity(GetVehiclePedIsIn(PlayerPedId(), false))
                         DestroyCam(cam, false)
-                        -- SetEntityCoords(PlayerPedId(), Config.DrawMarkerPos)
                     end
                     TriggerServerEvent('LConncessAuto:AddPlayerInRoutingBucket', GetPlayerServerId(PlayerId()))
                     testDrive = true
