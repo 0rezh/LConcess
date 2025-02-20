@@ -203,6 +203,11 @@ function RageUI.PoolMenus:ConcessAuto()
             if onSelected then
                 ESX.TriggerServerCallback('LConcess:CheckMoney', function(HasMoney)
                     if HasMoney then
+                        if not IsModelInCdimage(vehicleInfo.model) then return end
+                        RequestModel(vehicleInfo.model)
+                        while not HasModelLoaded(vehicleInfo.model) do
+                          Wait(0)
+                        end
                         local vehicle = CreateVehicle(vehicleInfo.model, 0, 0, 0, 0, true, false)
                         Wait(100)
                         local plate = GeneratePlate()
